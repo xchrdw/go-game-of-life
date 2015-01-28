@@ -51,4 +51,10 @@ func TestSpec(t *testing.T) {
 		board.NextGen()
 		So(board.ToString(), ShouldEqual, "___ XXX ___")
 	})
+
+	Convey("Given a different board", t, func() {
+		board := FromString("X _ X _ _ _", 1, 6)
+		So(board.ToString(), ShouldEqual, "X _ X _ _ _")
+		So(board.Texture(), ShouldResemble, []byte{255, 0, 255, 0, 0, 0})
+	})
 }

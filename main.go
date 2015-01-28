@@ -7,15 +7,32 @@ import (
 	"github.com/go-gl/glh"
 	"github.com/xchrdw/go-game-of-life/ui"
 
+	"log"
+	"os/exec"
 	"runtime"
 	"time"
 )
+
+func reexec() {
+	log.Println("rerun")
+	c := exec.Command("cmd", "/k", "start go run main.go")
+	if err := c.Run(); err != nil {
+		fmt.Println("Error: ", err)
+	}
+	log.Fatal("restarted")
+	return
+}
 
 func main() {
 	// lock glfw/gl calls to a single thread
 	runtime.LockOSThread()
 	glfw.Init()
 	defer glfw.Terminate()
+
+	glfw.SetErrorCallback(func(code glfw.ErrorCode, desc string) {
+		fmt.Println("GLFW ERROR! ", code)
+		panic(desc)
+	})
 
 	glfw.WindowHint(glfw.ContextVersionMajor, 3)
 	glfw.WindowHint(glfw.ContextVersionMinor, 3)
@@ -61,6 +78,9 @@ func main() {
 		gl.GetError() // THROW ERROR AWAY
 
 		glfw.PollEvents()
+		if window.GetKey(glfw.KeyR) == glfw.Press {
+			reexec()
+		}
 		if window.GetKey(glfw.KeyEscape) == glfw.Press {
 			window.SetShouldClose(true)
 		}

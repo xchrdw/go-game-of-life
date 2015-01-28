@@ -11,7 +11,8 @@ type Board struct {
 }
 
 func CreateBoard(width int, height int) *Board {
-	b := Board{width, height, make([]bool, width*height), make([]bool, width*height), make([]byte, width*height)}
+	size := width * height
+	b := Board{width, height, make([]bool, size), make([]bool, size), make([]byte, size)}
 	return &b
 }
 
@@ -47,7 +48,7 @@ func (board *Board) Height() int {
 }
 
 func (board *Board) Get(x int, y int) bool {
-	if x < 0 || y < 0 || x >= board.width || y >= board.width {
+	if x < 0 || y < 0 || x >= board.width || y >= board.height {
 		return false
 	}
 	return board.cells[x+y*board.width]

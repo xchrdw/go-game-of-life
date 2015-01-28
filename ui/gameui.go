@@ -3,6 +3,7 @@ package ui
 import (
 	"github.com/go-gl/gl"
 	"github.com/xchrdw/go-game-of-life/game"
+	"github.com/xchrdw/mathext/f32math"
 )
 
 type Game struct {
@@ -15,7 +16,13 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	board := game.FromString("__X_ XX__ __XX _X__", 4, 4)
+	board := game.FromString(`
+		________
+		____X___
+		__XX____ 
+		____XX__
+		___X____
+		________`, 8, 6)
 
 	geometry := NewBoardGeometry()
 
@@ -34,6 +41,7 @@ func (g *Game) Update(deltaSec float32) {
 		g.board.NextGen()
 		g.texture.Update(g.board)
 		g.boardUpdate -= g.interval
+		g.boardUpdate = f32math.Min(g.boardUpdate, g.interval)
 	}
 }
 
