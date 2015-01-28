@@ -4,18 +4,17 @@ import (
 	"encoding/binary"
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glh"
+	"github.com/go-gl/mathgl/mgl32"
 	"unsafe"
 )
-
-type BoardShader struct {
-	program gl.Program
-}
 
 const vertex = `#version 330
 in vec3 v_position;
 in vec2 v_uv;
 
 out vec2 f_uv;
+
+uniform mat4 view;
 
 void main() {
     gl_Position = vec4(v_position, 1.0);
@@ -31,6 +30,11 @@ void main() {
     float r = texture(board, f_uv).r;
     outColor = vec4(f_uv.x*0.3, f_uv.y*0.3, r, 1.0);
 }`
+
+type BoardShader struct {
+	program    gl.Program
+	viewMatLoc gl.UniformLocation
+}
 
 func NewBoardShader() BoardShader {
 	defer glh.OpenGLSentinel()()
@@ -54,7 +58,10 @@ func NewBoardShader() BoardShader {
 	textureLoc := program.GetUniformLocation("board")
 	textureLoc.Uniform1i(0)
 
-	return BoardShader{program}
+	viewMatLoc := program.GetUniformLocation("view")
+	viewMatLoc.UniformMatrix4fv(false, mgl32.Ident4())
+
+	return BoardShader{program, viewMatLoc}
 }
 
 func (s *BoardShader) Use() {

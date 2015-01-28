@@ -35,9 +35,10 @@ func main() {
 	})
 
 	glfw.WindowHint(glfw.ContextVersionMajor, 3)
-	glfw.WindowHint(glfw.ContextVersionMinor, 3)
+	glfw.WindowHint(glfw.ContextVersionMinor, 1) // 3
 	glfw.WindowHint(glfw.OpenglForwardCompatible, glfw.True)
-	glfw.WindowHint(glfw.OpenglProfile, glfw.OpenglCoreProfile)
+	//glfw.WindowHint(glfw.OpenglProfile, glfw.OpenglCoreProfile)
+	glfw.WindowHint(glfw.OpenglDebugContext, glfw.True)
 	window, err := glfw.CreateWindow(800, 600, "Go Way of Life", nil, nil)
 	if err != nil {
 		panic(err)
@@ -50,11 +51,11 @@ func main() {
 
 	gl.GetError() // THROW ERROR AWAY
 
-	gl.DebugMessageCallback(func(source gl.GLenum, typ gl.GLenum, id uint, severity gl.GLenum, message string) {
+	/*gl.DebugMessageCallback(func(source gl.GLenum, typ gl.GLenum, id uint, severity gl.GLenum, message string) {
 		fmt.Println("===============")
 		fmt.Println(message)
 		fmt.Println("===============")
-	})
+	})*/
 
 	game := ui.NewGame()
 	defer game.Delete()
