@@ -1,4 +1,4 @@
-package ui
+package rendering
 
 import (
 	"encoding/binary"
@@ -16,7 +16,7 @@ func v(x float32, y float32, z float32, u float32, v float32) Vertex {
 	return Vertex{mgl32.Vec3{x, y, z}, mgl32.Vec2{u, v}}
 }
 
-const p float32 = 0.8
+const p float32 = 1.0
 
 var verticies = []Vertex{
 	v(-p, p, 0, 0, 0),
@@ -30,7 +30,7 @@ type BoardGeometry struct {
 	vbo gl.Buffer
 }
 
-func NewBoardGeometry() BoardGeometry {
+func NewBoardGeometry() *BoardGeometry {
 	defer glh.OpenGLSentinel()()
 
 	vao := gl.GenVertexArray()
@@ -41,7 +41,7 @@ func NewBoardGeometry() BoardGeometry {
 
 	gl.BufferData(gl.ARRAY_BUFFER, binary.Size(verticies), verticies, gl.STATIC_DRAW)
 
-	return BoardGeometry{vao, vbo}
+	return &BoardGeometry{vao, vbo}
 
 }
 

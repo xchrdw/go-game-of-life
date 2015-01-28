@@ -1,4 +1,4 @@
-package game
+package logic
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
@@ -8,7 +8,7 @@ import (
 func TestSpec(t *testing.T) {
 
 	Convey("Given some board", t, func() {
-		board := FromString("__X _X_", 3, 2)
+		board := FromString("__X _X_", 3, 2, 0)
 		Convey("Is valid", func() {
 			So(board.width, ShouldEqual, 3)
 			So(board.height, ShouldEqual, 2)
@@ -38,13 +38,13 @@ func TestSpec(t *testing.T) {
 		})
 	})
 	Convey("Given a static object", t, func() {
-		board := FromString("_X_ X_X _X_", 3, 3)
+		board := FromString("_X_ X_X _X_", 3, 3, 0)
 		So(board.ToString(), ShouldEqual, "_X_ X_X _X_")
 		board.NextGen()
 		So(board.ToString(), ShouldEqual, "_X_ X_X _X_")
 	})
 	Convey("Given a blinker object", t, func() {
-		board := FromString("___ XXX ___", 3, 3)
+		board := FromString("___ XXX ___", 3, 3, 0)
 		So(board.ToString(), ShouldEqual, "___ XXX ___")
 		board.NextGen()
 		So(board.ToString(), ShouldEqual, "_X_ _X_ _X_")
@@ -53,8 +53,17 @@ func TestSpec(t *testing.T) {
 	})
 
 	Convey("Given a different board", t, func() {
-		board := FromString("X _ X _ _ _", 1, 6)
-		So(board.ToString(), ShouldEqual, "X _ X _ _ _")
-		So(board.Texture(), ShouldResemble, []byte{255, 0, 255, 0, 0, 0})
+		board := FromString("X_ XX _X", 2, 3, 0)
+		So(board.ToString(), ShouldEqual, "X_ XX _X")
+		So(board.Texture(), ShouldResemble, []byte{
+			0, 255, 0, 0,
+			0, 255, 255, 0,
+			0, 0, 255, 0,
+			0, 0, 0, 0})
+	})
+
+	Convey("A board with offset", t, func() {
+		board := FromString("X_ XX _X", 2, 3, 1)
+		So(board.ToString(), ShouldEqual, "____ _X__ _XX_ __X_ ____")
 	})
 }

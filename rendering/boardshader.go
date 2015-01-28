@@ -1,4 +1,4 @@
-package ui
+package rendering
 
 import (
 	"encoding/binary"
@@ -17,7 +17,7 @@ out vec2 f_uv;
 uniform mat4 view;
 
 void main() {
-    gl_Position = vec4(v_position, 1.0);
+    gl_Position = view * vec4(v_position, 1.0);
     f_uv = v_uv ;
 }`
 
@@ -36,7 +36,7 @@ type BoardShader struct {
 	viewMatLoc gl.UniformLocation
 }
 
-func NewBoardShader() BoardShader {
+func NewBoardShader() *BoardShader {
 	defer glh.OpenGLSentinel()()
 
 	vertex_shader := glh.Shader{gl.VERTEX_SHADER, vertex}
@@ -61,11 +61,15 @@ func NewBoardShader() BoardShader {
 	viewMatLoc := program.GetUniformLocation("view")
 	viewMatLoc.UniformMatrix4fv(false, mgl32.Ident4())
 
-	return BoardShader{program, viewMatLoc}
+	return &BoardShader{program, viewMatLoc}
 }
 
 func (s *BoardShader) Use() {
 	s.program.Use()
+}
+
+func (s *BoardShader) SetView(view mgl32.Mat4) {
+	s.viewMatLoc.UniformMatrix4fv(false, view)
 }
 
 func (s *BoardShader) Delete() {

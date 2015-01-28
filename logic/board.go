@@ -1,31 +1,40 @@
-package game
+package logic
 
-import ()
+import (
+	"github.com/xchrdw/mathext/imath"
+	"strings"
+)
 
 type Board struct {
-	width   int
-	height  int
-	cells   []bool
-	lastGen []bool
-	texture []byte
+	width       int
+	height      int
+	textureSize int
+	cells       []bool
+	lastGen     []bool
+	texture     []byte
 }
 
 func CreateBoard(width int, height int) *Board {
 	size := width * height
-	b := Board{width, height, make([]bool, size), make([]bool, size), make([]byte, size)}
+	texture_size := imath.NextPow2(imath.Max(width, height))
+	b := Board{width, height, texture_size, make([]bool, size), make([]bool, size), make([]byte, texture_size*texture_size)}
 	return &b
 }
 
-func FromString(board string, width int, height int) *Board {
-	b := CreateBoard(width, height)
+func FromString(board string, width int, height int, offset int) *Board {
+	b := CreateBoard(width+offset*2, height+offset*2)
+	if strings.Count(board, "X")+strings.Count(board, "_") != width*height {
+		panic("invalid board size")
+	}
+
 	i := 0
 	for _, c := range board {
 		switch c {
-		case 'x', 'X':
-			b.cells[i] = true
+		case 'X':
+			pos := (i/width+offset)*b.width + (i%width + offset)
+			b.cells[pos] = true
 			i++
 		case '_':
-			b.cells[i] = false
 			i++
 		}
 	}
@@ -38,6 +47,10 @@ func FromString(board string, width int, height int) *Board {
 
 func (board *Board) Texture() []byte {
 	return board.texture
+}
+
+func (board *Board) TextureSize() int {
+	return board.textureSize
 }
 
 func (board *Board) Width() int {
@@ -83,11 +96,14 @@ func (board *Board) NextGen() {
 }
 
 func (board *Board) updateTexture() {
+	offsetx := (board.textureSize - board.width) / 2
+	offsety := (board.textureSize - board.height) / 2
 	for i, b := range board.cells {
+		pos := (i/board.width+offsety)*board.textureSize + i%board.width + offsetx
 		if b {
-			board.texture[i] = 255
+			board.texture[pos] = 255
 		} else {
-			board.texture[i] = 0
+			board.texture[pos] = 0
 		}
 	}
 }

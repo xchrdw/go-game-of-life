@@ -5,7 +5,8 @@ import (
 	"github.com/go-gl/gl"
 	glfw "github.com/go-gl/glfw3"
 	"github.com/go-gl/glh"
-	"github.com/xchrdw/go-game-of-life/ui"
+	"github.com/xchrdw/go-game-of-life/game"
+	"math"
 
 	"log"
 	"os/exec"
@@ -57,17 +58,24 @@ func main() {
 		fmt.Println("===============")
 	})*/
 
-	game := ui.NewGame()
+	game := game.NewGame()
 	defer game.Delete()
 
-	last := time.Now()
+	window.SetKeyCallback(func(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+		game.KeyCallback(w, key, action, mods)
+	})
+	window.SetFramebufferSizeCallback(func(w *glfw.Window, width int, height int) {
+		gl.Viewport(0, 0, width, height)
+	})
+
+	last := glfw.GetTime()
 
 	gl.ClearColor(0.3, 0.3, 0.3, 1.0)
 	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-		now := time.Now()
-		passed := now.Sub(last).Seconds()
+		now := glfw.GetTime()
+		passed := now - last
 		last = now
 
 		game.Update(float32(passed))
@@ -85,8 +93,9 @@ func main() {
 		if window.GetKey(glfw.KeyEscape) == glfw.Press {
 			window.SetShouldClose(true)
 		}
-
 		glh.OpenGLSentinel()
-		time.Sleep(10 * time.Millisecond)
+
+		sleeptime := math.Max(0.0, 1.0/60.0-(glfw.GetTime()-now)) * float64(time.Second)
+		time.Sleep(time.Duration(sleeptime))
 	}
 }
