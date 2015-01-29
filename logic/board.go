@@ -1,8 +1,9 @@
 package logic
 
 import (
-	"github.com/xchrdw/mathext/imath"
 	"strings"
+
+	"github.com/xchrdw/mathext/imath"
 )
 
 type Board struct {

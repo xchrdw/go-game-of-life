@@ -2,10 +2,11 @@ package rendering
 
 import (
 	"encoding/binary"
+	"unsafe"
+
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glh"
 	"github.com/go-gl/mathgl/mgl32"
-	"unsafe"
 )
 
 const vertex = `#version 330

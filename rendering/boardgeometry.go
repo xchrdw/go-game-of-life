@@ -2,6 +2,7 @@ package rendering
 
 import (
 	"encoding/binary"
+
 	"github.com/go-gl/gl"
 	"github.com/go-gl/glh"
 	"github.com/go-gl/mathgl/mgl32"

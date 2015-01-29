@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+
 	"github.com/go-gl/gl"
 	glfw "github.com/go-gl/glfw3"
 	"github.com/go-gl/mathgl/mgl32"
@@ -17,8 +18,8 @@ type Game struct {
 	texture     *rendering.BoardTexture
 	boardUpdate float32
 	interval    float32
-	controls    Controls
-	camera      Camera
+	controls    *Controls
+	camera      *Camera
 }
 
 func NewGame() *Game {
@@ -29,8 +30,8 @@ func NewGame() *Game {
 		`, 8, 3, 5)
 	fmt.Printf("Board size: %vx%v, texture-size: %v\n", board.Width(), board.Height(), board.TextureSize())
 
-	camera := Camera{mgl32.Vec2{}, 1.0}
-	controls := Controls{}
+	camera := NewCamera()
+	controls := &Controls{}
 
 	geometry := rendering.NewBoardGeometry()
 
@@ -67,8 +68,22 @@ func (g *Game) Draw() {
 	gl.DrawArrays(gl.TRIANGLE_STRIP, 0, 4)
 }
 
-func (g *Game) KeyCallback(w *glfw.Window, key glfw.Key, action glfw.Action, mods glfw.ModifierKey) {
-	g.controls.KeyCallback(w, key, action, mods)
+func (g *Game) ViewportChangedCallback(width int, height int) {
+	g.camera.ViewportChangedCallback(width, height)
+}
+
+func (g *Game) KeyCallback(key glfw.Key, action glfw.Action, mods glfw.ModifierKey) {
+	g.controls.KeyCallback(key, action, mods)
+}
+func (g *Game) MouseButtonCallback(button glfw.MouseButton, action glfw.Action) {
+	g.controls.MouseButtonCallback(button, action)
+}
+func (g *Game) CursorPositionCallback(xpos float32, ypos float32) {
+	g.controls.CursorCallback(mgl32.Vec2{xpos, ypos})
+}
+
+func (g *Game) ScrollCallback(yoff float32) {
+	g.controls.ScrollCallback(yoff)
 }
 
 func (g *Game) Delete() {
